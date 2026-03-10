@@ -64,3 +64,8 @@ export interface PlacePayload {
   name: string;
   cupboard_id: number;
 }
+
+export interface CupboardPayload {
+  name: string;
+  location?: string;
+}
