@@ -23,3 +23,20 @@ export interface LoginPayload {
   email: string;
   password: string;
 }
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+  from: number;
+  to: number;
+}
+
+export interface UserPayload {
+  name: string;
+  email: string;
+  password?: string;
+  role: Role;
+}
