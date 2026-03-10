@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\borrows;
+use App\Models\Borrows;
 use Illuminate\Http\Request;
 
 class BorrowsController extends Controller
@@ -34,7 +34,7 @@ class BorrowsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(borrows $borrows)
+    public function show(Borrows $borrows)
     {
         //
     }
@@ -42,7 +42,7 @@ class BorrowsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(borrows $borrows)
+    public function edit(Borrows $borrows)
     {
         //
     }
@@ -50,7 +50,7 @@ class BorrowsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, borrows $borrows)
+    public function update(Request $request, Borrows $borrows)
     {
         //
     }
@@ -58,7 +58,7 @@ class BorrowsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(borrows $borrows)
+    public function destroy(Borrows $borrows)
     {
         //
     }
