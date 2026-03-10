@@ -5,7 +5,11 @@ export default function MainDashboardLayout({
 }>) {
   return (
     <>
-        {children}
+      <div className="flex h-screen overflow-hidden bg-slate-50">
+        <main className="flex flex-1 flex-col overflow-hidden">
+          {children}
+        </main>
+      </div>
     </>
   );
 }
