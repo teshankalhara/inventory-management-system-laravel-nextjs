@@ -1,3 +1,8 @@
+/**
+ * lib/axios-instance.ts
+ * 
+ * @updated 03/10/2026
+ */
 import axios from 'axios';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE
