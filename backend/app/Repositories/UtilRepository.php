@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Collection;
 //use for crud
 abstract class UtilRepository
 {
-    public function __construct(protected Model $model) {}
+    public function __construct(protected Model $model)
+    {
+    }
 
     //get all
     public function all(array $with = []): Collection
