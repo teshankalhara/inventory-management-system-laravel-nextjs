@@ -2,18 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PlaceRequest;
 use App\Models\Places;
+use App\Services\ActivityLogService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PlacesController extends Controller
 {
+    public function __construct(private readonly ActivityLogService $logger)
+    {
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        //
+        return response()->json(
+            Places::with('cupboard')->withCount('items')->orderBy('name')->get()
+        );
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -26,9 +35,14 @@ class PlacesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(PlaceRequest $request): JsonResponse
     {
-        //
+        $place = Places::create($request->validated());
+        $place->load('cupboard');
+
+        $this->logger->log('place.created', 'Place', $place->id, null, $place->toArray());
+
+        return response()->json($place, 201);
     }
 
     /**
@@ -50,16 +64,25 @@ class PlacesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Places $places)
+    public function update(PlaceRequest $request, int $id): JsonResponse
     {
-        //
+        $place = Places::findOrFail($id);
+        $old = $place->toArray();
+        $place->update($request->validated());
+        $this->logger->log('place.updated', 'Place', $id, $old, $place->toArray());
+
+        return response()->json($place->load('cupboard'));
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Places $places)
+    public function destroy(int $id): JsonResponse
     {
-        //
+        $place = Places::findOrFail($id);
+        $this->logger->log('place.deleted', 'Place', $id, $place->toArray());
+        $place->delete();
+
+        return response()->json(['message' => 'Place deleted.']);
     }
 }
