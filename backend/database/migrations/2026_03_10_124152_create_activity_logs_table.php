@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,7 +12,15 @@ return new class extends Migration
     {
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('action');          // itm/borro create
+            $table->string('entity_type');     // itm borrow
+            $table->unsignedBigInteger('entity_id');
+            $table->jsonb('old_value')->nullable();
+            $table->jsonb('new_value')->nullable();
+            $table->timestamp('created_at')->useCurrent();
+
+            $table->index(['entity_type', 'entity_id']);
         });
     }
 
