@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Borrow;
 use App\Models\Borrows;
 use App\Repositories\BorrowRepository;
 use App\Repositories\ItemRepository;
@@ -13,10 +12,11 @@ use Illuminate\Validation\ValidationException;
 class BorrowService
 {
     public function __construct(
-        private readonly BorrowRepository   $borrowRepo,
-        private readonly ItemRepository     $itemRepo,
+        private readonly BorrowRepository $borrowRepo,
+        private readonly ItemRepository $itemRepo,
         private readonly ActivityLogService $logger
-    ) {}
+    ) {
+    }
 
     public function paginate(int $perPage = 15)
     {
@@ -47,14 +47,14 @@ class BorrowService
 
             $borrow = Borrows::create([
                 ...$data,
-                'status'     => Borrows::STATUS_BORROWED,
+                'status' => Borrows::STATUS_BORROWED,
                 'created_by' => Auth::id(),
             ]);
 
             $this->logger->log('borrow.created', 'Borrow', $borrow->id, null, [
-                'item_id'   => $item->id,
+                'item_id' => $item->id,
                 'item_name' => $item->name,
-                'quantity'  => $data['quantity'],
+                'quantity' => $data['quantity'],
             ]);
 
             $this->logger->log('item.quantity_changed', 'Item', $item->id, [
@@ -89,14 +89,14 @@ class BorrowService
             $item->save();
 
             $borrow->update([
-                'status'        => Borrows::STATUS_RETURNED,
+                'status' => Borrows::STATUS_RETURNED,
                 'returned_date' => now()->toDateString(),
             ]);
 
             $this->logger->log('borrow.returned', 'Borrow', $borrow->id, [
                 'status' => 'borrowed',
             ], [
-                'status'        => 'returned',
+                'status' => 'returned',
                 'returned_date' => $borrow->returned_date,
             ]);
 
