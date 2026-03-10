@@ -26,7 +26,7 @@ class ItemRepository extends UtilRepository
             ->with(['place.cupboard'])
             ->where(function ($q) use ($query) {
                 $q->where('name', 'ilike', "%{$query}%")
-                  ->orWhere('code', 'ilike', "%{$query}%");
+                    ->orWhere('code', 'ilike', "%{$query}%");
             })
             ->latest()
             ->paginate($perPage);
