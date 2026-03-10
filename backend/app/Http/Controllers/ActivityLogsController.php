@@ -3,16 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActivityLogs;
+use App\Services\ActivityLogService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ActivityLogsController extends Controller
 {
+    public function __construct(private readonly ActivityLogService $service) {}
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        //
+        return response()->json($this->service->paginate());
     }
 
     /**
