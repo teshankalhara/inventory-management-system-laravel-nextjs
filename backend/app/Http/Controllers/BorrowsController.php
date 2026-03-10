@@ -2,17 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BorrowRequest;
 use App\Models\Borrows;
+use App\Services\BorrowService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class BorrowsController extends Controller
 {
+    public function __construct(private readonly BorrowService $service)
+    {
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        //
+        return response()->json($this->service->paginate());
     }
 
     /**
@@ -26,9 +33,10 @@ class BorrowsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(BorrowRequest $request): JsonResponse
     {
-        //
+        $borrow = $this->service->borrow($request->validated());
+        return response()->json($borrow, 201);
     }
 
     /**
@@ -61,5 +69,11 @@ class BorrowsController extends Controller
     public function destroy(Borrows $borrows)
     {
         //
+    }
+
+    public function returnItem(int $borrowId): JsonResponse
+    {
+        $borrow = $this->service->returnItem($borrowId);
+        return response()->json($borrow);
     }
 }
