@@ -18,10 +18,10 @@ class UserRequest extends FormRequest
         $userId = $this->route('user');
 
         return [
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'email', Rule::unique('users', 'email')->ignore($userId)],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($userId)],
             'password' => [$userId ? 'nullable' : 'required', 'string', Password::min(8)],
-            'role'     => ['required', 'in:admin,staff'],
+            'role' => ['required', 'in:admin,staff'],
         ];
     }
 }
