@@ -40,3 +40,27 @@ export interface UserPayload {
   password?: string;
   role: Role;
 }
+
+export interface Cupboard {
+  id: number;
+  name: string;
+  location: string | null;
+  places_count?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Place {
+  id: number;
+  name: string;
+  cupboard_id: number;
+  cupboard?: Cupboard;
+  items_count?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PlacePayload {
+  name: string;
+  cupboard_id: number;
+}
