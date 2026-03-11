@@ -15,11 +15,11 @@ class Places extends Model
 
     public function cupboard(): BelongsTo
     {
-        return $this->belongsTo(Cupboards::class);
+        return $this->belongsTo(Cupboards::class, 'cupboard_id');
     }
 
     public function items(): HasMany
     {
-        return $this->hasMany(Items::class);
+        return $this->hasMany(Items::class, 'place_id');
     }
 }
