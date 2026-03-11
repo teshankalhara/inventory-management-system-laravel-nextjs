@@ -11,6 +11,7 @@ import UserForm from '@/components/forms/user-form';
 import TopNav from '@/components/top-nav';
 import DataTable, { Column } from '@/components/data-table';
 import { userService } from '@/services/user-service';
+import { toast } from 'sonner';
 
 export default function UsersPage() {
   const [response, setResponse] = useState<PaginatedResponse<User> | null>(null);
@@ -33,19 +34,30 @@ export default function UsersPage() {
   const close = () => { setModal(null); setSelected(null); };
 
   const handleSubmit = async (data: UserPayload) => {
-    if (selected) {
-      await userService.update(selected.id, data);
-    } else {
-      await userService.create(data);
+    try {
+      if (selected) {
+        await userService.update(selected.id, data);
+        toast.success('User updated successfully.');
+      } else {
+        await userService.create(data);
+        toast.success('User created successfully.');
+      }
+      close();
+      await load();
+    } catch {
+      toast.error(selected ? 'Failed to update user.' : 'Failed to create user.');
     }
-    close();
-    load();
   };
 
   const handleDelete = async (id: number) => {
     if (!confirm('Delete this user?')) return;
-    await userService.remove(id);
-    load();
+    try {
+      await userService.remove(id);
+      toast.success('User deleted successfully.');
+      await load();
+    } catch {
+      toast.error('Failed to delete user.');
+    }
   };
 
   const columns: Column<User>[] = [
