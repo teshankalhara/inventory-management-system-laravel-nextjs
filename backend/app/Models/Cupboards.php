@@ -14,12 +14,19 @@ class Cupboards extends Model
 
     public function places(): HasMany
     {
-        return $this->hasMany(Places::class);
+        return $this->hasMany(Places::class, 'cupboard_id');
     }
 
     // Convenience: all items stored anywhere in this cupboard
     public function items()
     {
-        return $this->hasManyThrough(Items::class, Places::class);
+        return $this->hasManyThrough(
+            Items::class,
+            Places::class,
+            'cupboard_id',
+            'place_id',
+            'id',
+            'id'
+        );
     }
 }
