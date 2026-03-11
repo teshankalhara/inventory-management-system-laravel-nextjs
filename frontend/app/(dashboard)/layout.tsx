@@ -1,15 +1,12 @@
-export default function MainDashboardLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+import Sidebar from "@/components/side-bar";
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <div className="flex h-screen overflow-hidden bg-slate-50">
-        <main className="flex flex-1 flex-col overflow-hidden">
-          {children}
-        </main>
-      </div>
-    </>
+    <div className="flex h-screen overflow-hidden bg-slate-50">
+      <Sidebar />
+      <main className="flex flex-1 flex-col overflow-hidden">
+        {children}
+      </main>
+    </div>
   );
 }
