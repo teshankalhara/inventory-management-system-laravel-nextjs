@@ -5,10 +5,14 @@ namespace App\Services;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthService
 {
+    /**
+     * Attempt login and return a Sanctum token on success.
+     * Throws a ValidationException (422) on bad credentials so
+     * the controller can return a consistent error response.
+     */
     public function login(string $email, string $password): array
     {
         $user = User::where('email', $email)->first();
@@ -19,7 +23,9 @@ class AuthService
             ]);
         }
 
+        // Revoke all existing tokens to enforce single-session behaviour
         $user->tokens()->delete();
+
         $token = $user->createToken('api-token')->plainTextToken;
 
         return [
@@ -30,10 +36,6 @@ class AuthService
 
     public function logout(User $user): void
     {
-        $token = $user->currentAccessToken();
-
-        if ($token instanceof PersonalAccessToken) {
-            $token->delete();
-        }
+        $user->currentAccessToken()->delete();
     }
 }
