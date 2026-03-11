@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import TopNav from '@/components/top-nav';
 import Modal from '@/components/modal';
+import { toast } from 'sonner';
 
 export default function CupboardsPage() {
     const [data, setData] = useState<Cupboard[]>([]);
@@ -39,11 +40,15 @@ export default function CupboardsPage() {
         try {
             if (selected) {
                 await cupboardService.update(selected.id, form);
+                toast.success('Cupboard updated successfully.');
             } else {
                 await cupboardService.create(form);
+                toast.success('Cupboard created successfully.');
             }
             close();
-            load();
+            await load();
+        } catch {
+            toast.error(selected ? 'Failed to update cupboard.' : 'Failed to create cupboard.');
         } finally {
             setSaving(false);
         }
@@ -51,8 +56,13 @@ export default function CupboardsPage() {
 
     const handleDelete = async (id: number) => {
         if (!confirm('Delete this cupboard and all its places?')) return;
-        await cupboardService.remove(id);
-        load();
+        try {
+            await cupboardService.remove(id);
+            toast.success('Cupboard deleted successfully.');
+            await load();
+        } catch {
+            toast.error('Failed to delete cupboard.');
+        }
     };
 
     const columns: Column<Cupboard>[] = [
