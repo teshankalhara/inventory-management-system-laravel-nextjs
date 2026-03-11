@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import type { User, UserPayload } from '@/types';
 import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 
 interface Props {
   initial?: User;
@@ -46,17 +48,17 @@ export default function UserForm({ initial, onSubmit, onCancel }: Props) {
       )}
 
       <Field label="Full Name">
-        <input name="name" value={form.name} onChange={handle} required
+        <Input name="name" value={form.name} onChange={handle} required
           className="input" placeholder="John Doe" />
       </Field>
 
       <Field label="Email">
-        <input name="email" type="email" value={form.email} onChange={handle} required
+        <Input name="email" type="email" value={form.email} onChange={handle} required
           className="input" placeholder="john@company.com" />
       </Field>
 
       <Field label={initial ? 'New Password (leave blank to keep)' : 'Password'}>
-        <input name="password" type="password" value={form.password} onChange={handle}
+        <Input name="password" type="password" value={form.password} onChange={handle}
           required={!initial} className="input" placeholder="••••••••" />
       </Field>
 
@@ -78,7 +80,7 @@ export default function UserForm({ initial, onSubmit, onCancel }: Props) {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-sm font-medium text-slate-700">{label}</label>
+      <Label>{label}</Label>
       {children}
     </div>
   );
