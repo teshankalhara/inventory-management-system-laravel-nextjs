@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import Modal from '@/components/modal';
 import TopNav from '@/components/top-nav';
 import ItemForm from '@/components/forms/item-form';
+import { toast } from 'sonner';
 
 export default function ItemsPage() {
     const [response, setResponse] = useState<PaginatedResponse<Item> | null>(null);
@@ -39,15 +40,30 @@ export default function ItemsPage() {
     const close = () => { setModal(null); setSelected(null); };
 
     const handleSubmit = async (data: ItemPayload) => {
-        selected ? await itemService.update(selected.id, data) : await itemService.create(data);
-        close();
-        load();
+        try {
+            if (selected) {
+                await itemService.update(selected.id, data);
+                toast.success('Item updated successfully.');
+            } else {
+                await itemService.create(data);
+                toast.success('Item created successfully.');
+            }
+            close();
+            await load();
+        } catch {
+            toast.error(selected ? 'Failed to update item.' : 'Failed to create item.');
+        }
     };
 
     const handleDelete = async (id: number) => {
         if (!confirm('Delete this item?')) return;
-        await itemService.remove(id);
-        load();
+        try {
+            await itemService.remove(id);
+            toast.success('Item deleted successfully.');
+            await load();
+        } catch {
+            toast.error('Failed to delete item.');
+        }
     };
 
     const columns: Column<Item>[] = [
