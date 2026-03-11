@@ -8,6 +8,7 @@ import { borrowService } from '@/services/borrow-service';
 import TopNav from '@/components/top-nav';
 import { Button } from '@/components/ui/button';
 import BorrowForm from '@/components/forms/borrow-form';
+import { toast } from 'sonner';
 
 export default function BorrowPage() {
   const router  = useRouter();
@@ -15,9 +16,14 @@ export default function BorrowPage() {
   const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (data: BorrowPayload) => {
-    await borrowService.borrow(data);
-    setModal(false);
-    setSuccess(true);
+    try {
+      await borrowService.borrow(data);
+      toast.success('Borrow recorded successfully.');
+      setModal(false);
+      setSuccess(true);
+    } catch {
+      toast.error('Failed to record borrow request.');
+    }
   };
 
   if (success) {
