@@ -12,6 +12,7 @@ import { placeService } from '@/services/place-service';
 import { cupboardService } from '@/services/cupboard-service';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 
 export default function PlacesPage() {
     const [data, setData] = useState<Place[]>([]);
@@ -40,9 +41,17 @@ export default function PlacesPage() {
         e.preventDefault();
         setSaving(true);
         try {
-            selected ? await placeService.update(selected.id, form) : await placeService.create(form);
+            if (selected) {
+                await placeService.update(selected.id, form);
+                toast.success('Place updated successfully.');
+            } else {
+                await placeService.create(form);
+                toast.success('Place created successfully.');
+            }
             close();
-            load();
+            await load();
+        } catch {
+            toast.error(selected ? 'Failed to update place.' : 'Failed to create place.');
         } finally {
             setSaving(false);
         }
@@ -50,8 +59,13 @@ export default function PlacesPage() {
 
     const handleDelete = async (id: number) => {
         if (!confirm('Delete this place?')) return;
-        await placeService.remove(id);
-        load();
+        try {
+            await placeService.remove(id);
+            toast.success('Place deleted successfully.');
+            await load();
+        } catch {
+            toast.error('Failed to delete place.');
+        }
     };
 
     const columns: Column<Place>[] = [
