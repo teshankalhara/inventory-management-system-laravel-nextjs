@@ -10,6 +10,8 @@ import TopNav from '@/components/top-nav';
 import Modal from '@/components/modal';
 import { placeService } from '@/services/place-service';
 import { cupboardService } from '@/services/cupboard-service';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function PlacesPage() {
     const [data, setData] = useState<Place[]>([]);
@@ -81,11 +83,11 @@ export default function PlacesPage() {
             <Modal open={modal} onClose={close} title={selected ? 'Edit Place' : 'Add Place'} size="sm">
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-1.5">
-                        <label className="block text-sm font-medium text-slate-700">Name</label>
-                        <input className="input" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} required />
+                        <Label>Name</Label>
+                        <Input className="input" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} required />
                     </div>
                     <div className="space-y-1.5">
-                        <label className="block text-sm font-medium text-slate-700">Cupboard</label>
+                        <Label>Cupboard</Label>
                         <select className="input" value={form.cupboard_id} onChange={(e) => setForm((p) => ({ ...p, cupboard_id: Number(e.target.value) }))} required>
                             <option value={0} disabled>Select a cupboard…</option>
                             {cupboards.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
