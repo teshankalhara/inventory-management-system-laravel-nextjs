@@ -9,9 +9,7 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    public function __construct(private readonly AuthService $service)
-    {
-    }
+    public function __construct(private readonly AuthService $service) {}
 
     public function login(LoginRequest $request): JsonResponse
     {
@@ -21,7 +19,7 @@ class AuthController extends Controller
         );
 
         return response()->json([
-            'user' => $result['user'],
+            'user'  => $result['user'],
             'token' => $result['token'],
         ]);
     }
@@ -29,6 +27,7 @@ class AuthController extends Controller
     public function logout(Request $request): JsonResponse
     {
         $this->service->logout($request->user());
+
         return response()->json(['message' => 'Logged out successfully.']);
     }
 
