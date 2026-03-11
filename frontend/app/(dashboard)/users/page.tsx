@@ -12,6 +12,16 @@ import TopNav from '@/components/top-nav';
 import DataTable, { Column } from '@/components/data-table';
 import { userService } from '@/services/user-service';
 import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export default function UsersPage() {
   const [response, setResponse] = useState<PaginatedResponse<User> | null>(null);
@@ -19,6 +29,8 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<'create' | 'edit' | null>(null);
   const [selected, setSelected] = useState<User | null>(null);
+  const [deleteUserId, setDeleteUserId] = useState<number | null>(null);
+  const [deletingUserId, setDeletingUserId] = useState<number | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -49,14 +61,18 @@ export default function UsersPage() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Delete this user?')) return;
+  const handleDelete = async () => {
+    if (deleteUserId === null) return;
+    setDeletingUserId(deleteUserId);
     try {
-      await userService.remove(id);
+      await userService.remove(deleteUserId);
       toast.success('User deleted successfully.');
+      setDeleteUserId(null);
       await load();
     } catch {
       toast.error('Failed to delete user.');
+    } finally {
+      setDeletingUserId(null);
     }
   };
 
@@ -79,7 +95,7 @@ export default function UsersPage() {
           <Button size="sm" variant="ghost" onClick={() => openEdit(u)}>
             <Pencil className="h-3.5 w-3.5" />
           </Button>
-          <Button size="sm" variant="ghost" onClick={() => handleDelete(u.id)}>
+          <Button size="sm" variant="ghost" onClick={() => setDeleteUserId(u.id)}>
             <Trash2 className="h-3.5 w-3.5 text-red-500" />
           </Button>
         </div>
@@ -115,6 +131,28 @@ export default function UsersPage() {
       >
         <UserForm initial={selected ?? undefined} onSubmit={handleSubmit} onCancel={close} />
       </Modal>
+
+      <AlertDialog open={deleteUserId !== null} onOpenChange={(open) => !open && setDeleteUserId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this user?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deletingUserId !== null}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleteUserId === null || deletingUserId !== null}
+              onClick={() => {
+                void handleDelete();
+              }}
+            >
+              Delete user
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
