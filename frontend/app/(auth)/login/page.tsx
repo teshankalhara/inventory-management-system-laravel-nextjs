@@ -7,6 +7,7 @@ import { authService } from '@/services/auth-service';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -28,14 +29,16 @@ export default function LoginPage() {
             const apiMessage = axiosErr?.response?.data?.errors
                 ? Object.values(axiosErr.response.data.errors).flat().join(' ')
                 : axiosErr?.response?.data?.message;
-            setError(apiMessage || 'Login failed. Please check your credentials.');
+            const message = apiMessage || 'Login failed. Please check your credentials.';
+            setError(message);
+            toast.error(message);
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-950 via-slate-800 to-slate-950 p-4">
+        <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-950 via-slate-800 to-slate-950 p-4">
             <div className="w-full max-w-md">
                 <div className="mb-8 text-center">
                     <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-600 shadow-lg shadow-indigo-600/30">
