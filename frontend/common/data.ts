@@ -14,8 +14,8 @@ export const NAV_ITEMS = [
     { href: '/items', label: 'Inventory', icon: Package, adminOnly: false },
     { href: '/borrow-records', label: 'Borrow Records', icon: BookOpen, adminOnly: false },
     { href: '/borrow', label: 'Borrow Item', icon: ClipboardList, adminOnly: false },
-    { href: '/users', label: 'Users', icon: Users, adminOnly: true },
     { href: '/cupboards', label: 'Cupboards', icon: ArchiveX, adminOnly: true },
     { href: '/places', label: 'Places', icon: MapPin, adminOnly: true },
     { href: '/activity-logs', label: 'Activity Logs', icon: ActivityIcon, adminOnly: true },
+    { href: '/users', label: 'Users', icon: Users, adminOnly: true },
 ];
