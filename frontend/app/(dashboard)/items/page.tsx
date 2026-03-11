@@ -14,6 +14,16 @@ import Modal from '@/components/modal';
 import TopNav from '@/components/top-nav';
 import ItemForm from '@/components/forms/item-form';
 import { toast } from 'sonner';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export default function ItemsPage() {
     const [response, setResponse] = useState<PaginatedResponse<Item> | null>(null);
@@ -22,6 +32,8 @@ export default function ItemsPage() {
     const [loading, setLoading] = useState(true);
     const [modal, setModal] = useState<'create' | 'edit' | null>(null);
     const [selected, setSelected] = useState<Item | null>(null);
+    const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
+    const [deletingItemId, setDeletingItemId] = useState<number | null>(null);
 
     const load = useCallback(async () => {
         setLoading(true);
@@ -55,14 +67,18 @@ export default function ItemsPage() {
         }
     };
 
-    const handleDelete = async (id: number) => {
-        if (!confirm('Delete this item?')) return;
+    const handleDelete = async () => {
+        if (deleteItemId === null) return;
+        setDeletingItemId(deleteItemId);
         try {
-            await itemService.remove(id);
+            await itemService.remove(deleteItemId);
             toast.success('Item deleted successfully.');
+            setDeleteItemId(null);
             await load();
         } catch {
             toast.error('Failed to delete item.');
+        } finally {
+            setDeletingItemId(null);
         }
     };
 
@@ -84,7 +100,7 @@ export default function ItemsPage() {
                         <Button size="sm" variant="ghost"><Eye className="h-3.5 w-3.5" /></Button>
                     </Link>
                     <Button size="sm" variant="ghost" onClick={() => openEdit(i)}><Pencil className="h-3.5 w-3.5" /></Button>
-                    <Button size="sm" variant="ghost" onClick={() => handleDelete(i.id)}><Trash2 className="h-3.5 w-3.5 text-red-500" /></Button>
+                    <Button size="sm" variant="ghost" onClick={() => setDeleteItemId(i.id)}><Trash2 className="h-3.5 w-3.5 text-red-500" /></Button>
                 </div>
             ),
         },
@@ -122,6 +138,28 @@ export default function ItemsPage() {
             <Modal open={!!modal} onClose={close} title={selected ? 'Edit Item' : 'Add Item'} size="xl">
                 <ItemForm initial={selected ?? undefined} onSubmit={handleSubmit} onCancel={close} />
             </Modal>
+
+            <AlertDialog open={deleteItemId !== null} onOpenChange={(open) => !open && setDeleteItemId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Delete this item?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={deletingItemId !== null}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            disabled={deleteItemId === null || deletingItemId !== null}
+                            onClick={() => {
+                                void handleDelete();
+                            }}
+                        >
+                            Delete item
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 }
