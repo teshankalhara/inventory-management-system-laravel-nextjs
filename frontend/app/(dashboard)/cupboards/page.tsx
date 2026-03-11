@@ -12,6 +12,16 @@ import { Label } from '@/components/ui/label';
 import TopNav from '@/components/top-nav';
 import Modal from '@/components/modal';
 import { toast } from 'sonner';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export default function CupboardsPage() {
     const [data, setData] = useState<Cupboard[]>([]);
@@ -20,6 +30,8 @@ export default function CupboardsPage() {
     const [selected, setSelected] = useState<Cupboard | null>(null);
     const [form, setForm] = useState<CupboardPayload>({ name: '', location: '' });
     const [saving, setSaving] = useState(false);
+    const [deleteCupboardId, setDeleteCupboardId] = useState<number | null>(null);
+    const [deletingCupboardId, setDeletingCupboardId] = useState<number | null>(null);
 
     const load = useCallback(async () => {
         setLoading(true);
@@ -54,14 +66,18 @@ export default function CupboardsPage() {
         }
     };
 
-    const handleDelete = async (id: number) => {
-        if (!confirm('Delete this cupboard and all its places?')) return;
+    const handleDelete = async () => {
+        if (deleteCupboardId === null) return;
+        setDeletingCupboardId(deleteCupboardId);
         try {
-            await cupboardService.remove(id);
+            await cupboardService.remove(deleteCupboardId);
             toast.success('Cupboard deleted successfully.');
+            setDeleteCupboardId(null);
             await load();
         } catch {
             toast.error('Failed to delete cupboard.');
+        } finally {
+            setDeletingCupboardId(null);
         }
     };
 
@@ -82,7 +98,7 @@ export default function CupboardsPage() {
             render: (c) => (
                 <div className="flex gap-2">
                     <Button size="sm" variant="ghost" onClick={() => openEdit(c)}><Pencil className="h-3.5 w-3.5" /></Button>
-                    <Button size="sm" variant="ghost" onClick={() => handleDelete(c.id)}><Trash2 className="h-3.5 w-3.5 text-red-500" /></Button>
+                    <Button size="sm" variant="ghost" onClick={() => setDeleteCupboardId(c.id)}><Trash2 className="h-3.5 w-3.5 text-red-500" /></Button>
                 </div>
             ),
         },
@@ -115,6 +131,28 @@ export default function CupboardsPage() {
                     </div>
                 </form>
             </Modal>
+
+            <AlertDialog open={deleteCupboardId !== null} onOpenChange={(open) => !open && setDeleteCupboardId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Delete this cupboard?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will also remove related places. This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={deletingCupboardId !== null}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            disabled={deleteCupboardId === null || deletingCupboardId !== null}
+                            onClick={() => {
+                                void handleDelete();
+                            }}
+                        >
+                            Delete cupboard
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 }
