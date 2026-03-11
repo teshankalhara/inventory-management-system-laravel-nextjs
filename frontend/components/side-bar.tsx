@@ -8,19 +8,37 @@ import { useState, useEffect } from 'react';
 import { authService } from '@/services/auth-service';
 import { NAV_ITEMS } from '@/common/data';
 import { LogOut, Package } from 'lucide-react';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export default function Sidebar() {
     const pathname = usePathname();
     const router = useRouter();
     const [admin, setAdmin] = useState(false);
+    const [logoutOpen, setLogoutOpen] = useState(false);
+    const [loggingOut, setLoggingOut] = useState(false);
 
     useEffect(() => {
         setAdmin(isAdmin());
     }, []);
 
     const handleLogout = async () => {
-        await authService.logout();
-        router.push('/login');
+        setLoggingOut(true);
+        try {
+            await authService.logout();
+            setLogoutOpen(false);
+            router.push('/login');
+        } finally {
+            setLoggingOut(false);
+        }
     };
 
     const items = NAV_ITEMS.filter((item) => !item.adminOnly || admin);
@@ -59,13 +77,35 @@ export default function Sidebar() {
             {/* Logout */}
             <div className="border-t border-slate-700 px-4 py-4">
                 <button
-                    onClick={handleLogout}
+                    onClick={() => setLogoutOpen(true)}
                     className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:bg-red-600 hover:text-white"
                 >
                     <LogOut className="h-4 w-4" />
                     Logout
                 </button>
             </div>
+
+            <AlertDialog open={logoutOpen} onOpenChange={setLogoutOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure you want to logout?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You will be signed out and redirected to the login page.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={loggingOut}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            disabled={loggingOut}
+                            onClick={() => {
+                                void handleLogout();
+                            }}
+                        >
+                            {loggingOut ? 'Logging out...' : 'Logout'}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </aside>
     );
 }
