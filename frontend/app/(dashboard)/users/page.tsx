@@ -14,9 +14,9 @@ import { userService } from '@/services/user-service';
 
 export default function UsersPage() {
   const [response, setResponse] = useState<PaginatedResponse<User> | null>(null);
-  const [page, setPage]         = useState(1);
-  const [loading, setLoading]   = useState(true);
-  const [modal, setModal]       = useState<'create' | 'edit' | null>(null);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [modal, setModal] = useState<'create' | 'edit' | null>(null);
   const [selected, setSelected] = useState<User | null>(null);
 
   const load = useCallback(async () => {
@@ -29,8 +29,8 @@ export default function UsersPage() {
   useEffect(() => { load(); }, [load]);
 
   const openCreate = () => { setSelected(null); setModal('create'); };
-  const openEdit   = (u: User) => { setSelected(u); setModal('edit'); };
-  const close      = () => { setModal(null); setSelected(null); };
+  const openEdit = (u: User) => { setSelected(u); setModal('edit'); };
+  const close = () => { setModal(null); setSelected(null); };
 
   const handleSubmit = async (data: UserPayload) => {
     if (selected) {
@@ -49,7 +49,7 @@ export default function UsersPage() {
   };
 
   const columns: Column<User>[] = [
-    { key: 'name',  header: 'Name' },
+    { key: 'name', header: 'Name' },
     { key: 'email', header: 'Email' },
     {
       key: 'role', header: 'Role',
