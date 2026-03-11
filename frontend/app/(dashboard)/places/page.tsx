@@ -13,6 +13,16 @@ import { cupboardService } from '@/services/cupboard-service';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export default function PlacesPage() {
     const [data, setData] = useState<Place[]>([]);
@@ -22,6 +32,8 @@ export default function PlacesPage() {
     const [selected, setSelected] = useState<Place | null>(null);
     const [form, setForm] = useState<PlacePayload>({ name: '', cupboard_id: 0 });
     const [saving, setSaving] = useState(false);
+    const [deletePlaceId, setDeletePlaceId] = useState<number | null>(null);
+    const [deletingPlaceId, setDeletingPlaceId] = useState<number | null>(null);
 
     const load = useCallback(async () => {
         setLoading(true);
@@ -57,14 +69,18 @@ export default function PlacesPage() {
         }
     };
 
-    const handleDelete = async (id: number) => {
-        if (!confirm('Delete this place?')) return;
+    const handleDelete = async () => {
+        if (deletePlaceId === null) return;
+        setDeletingPlaceId(deletePlaceId);
         try {
-            await placeService.remove(id);
+            await placeService.remove(deletePlaceId);
             toast.success('Place deleted successfully.');
+            setDeletePlaceId(null);
             await load();
         } catch {
             toast.error('Failed to delete place.');
+        } finally {
+            setDeletingPlaceId(null);
         }
     };
 
@@ -78,7 +94,7 @@ export default function PlacesPage() {
             render: (p) => (
                 <div className="flex gap-2">
                     <Button size="sm" variant="ghost" onClick={() => openEdit(p)}><Pencil className="h-3.5 w-3.5" /></Button>
-                    <Button size="sm" variant="ghost" onClick={() => handleDelete(p.id)}><Trash2 className="h-3.5 w-3.5 text-red-500" /></Button>
+                    <Button size="sm" variant="ghost" onClick={() => setDeletePlaceId(p.id)}><Trash2 className="h-3.5 w-3.5 text-red-500" /></Button>
                 </div>
             ),
         },
@@ -113,6 +129,28 @@ export default function PlacesPage() {
                     </div>
                 </form>
             </Modal>
+
+            <AlertDialog open={deletePlaceId !== null} onOpenChange={(open) => !open && setDeletePlaceId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Delete this place?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={deletingPlaceId !== null}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            disabled={deletePlaceId === null || deletingPlaceId !== null}
+                            onClick={() => {
+                                void handleDelete();
+                            }}
+                        >
+                            Delete place
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 }
