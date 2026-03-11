@@ -87,7 +87,6 @@ export default function UsersPage() {
         </Badge>
       ),
     },
-    { key: 'created_at', header: 'Created', render: (u) => formatDate(u.createdAt) },
     {
       key: 'actions', header: '',
       render: (u) => (
