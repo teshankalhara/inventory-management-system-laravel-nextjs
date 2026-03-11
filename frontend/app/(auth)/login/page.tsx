@@ -22,12 +22,13 @@ export default function LoginPage() {
         setError('');
         try {
             await authService.login({ email, password });
-            document.cookie = `auth_token=${localStorage.getItem('auth_token')}; path=/; SameSite=Lax`;
             router.push('/dashboard');
-        } catch (err: any) {
-            const axiosErr = err 
-            console.error('Login error:', axiosErr);
-            setError('Login failed. Please check your credentials.');
+        } catch (err: unknown) {
+            const axiosErr = err as { response?: { data?: { message?: string; errors?: Record<string, string[]> } } };
+            const apiMessage = axiosErr?.response?.data?.errors
+                ? Object.values(axiosErr.response.data.errors).flat().join(' ')
+                : axiosErr?.response?.data?.message;
+            setError(apiMessage || 'Login failed. Please check your credentials.');
         } finally {
             setLoading(false);
         }
